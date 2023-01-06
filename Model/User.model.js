@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcryptjs")
-const userSchema =new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     Fullname: String,
     Username: String,
     Email: String,
@@ -11,18 +11,41 @@ const userSchema =new mongoose.Schema({
     Birthday: Object,
     Friends:Array,
     Follow:Array,
-    Verfied:Boolean
+    Verified:{
+        token:0,
+        verify:false
+    },
 });
 const generalPost= new mongoose.Schema({
-    PostId:Number,
     Username:String,
     Userid:String,
     ImageUpload:Array,
-    Likes:Array,
+    Likes:Object,
     Location:String,
     comment:Array,
-    TimeStamp:Object,
+    Time:String,
     Caption:String,
+})
+
+const MessageSchema=new mongoose.Schema({
+    message:{
+            type:String,
+            required:true
+    },
+    users:{
+        type:Array,
+        required:true
+    },
+    sender:{
+        type:String,
+        required:true
+    },
+    time:{
+        type:String,
+        required:true
+    }
+},{
+    timestamps:true
 })
 
 const salt = 10
@@ -49,8 +72,8 @@ userSchema.methods.comparePassword=function(candidatePassword,cb){
             }
         })
     }
-    const userPost= mongoose.model("user_post",generalPost)
-
+const userPost= mongoose.model("user_post",generalPost)
 const userModel =mongoose.model("My_tb",userSchema)
+const Message=mongoose.model("messages",MessageSchema)
+module.exports = {userModel,userPost,Message}
 
-module.exports = {userModel,userPost}
