@@ -20,27 +20,30 @@ const SigninJwt = (e) => {
 const Signup = async (req, res) => {
     const Email = req.body.Email;
 
-    userModel.findOne({ Email }, (error, result) => {
-        if (error) {
-            res.send({ message: "Registration failed", status: false })
-        }
-        else {
-            if (result) {
-                res.send({ message: "Email has already been  vused", status: false })
+    try {
+        
+        userModel.findOne(async{ Email }, (error, result) => {
+            if (error) {
+                res.send({ message: "Registration failed", status: false })
             }
             else {
-                let form = new userModel(req.body)
-                form.save((error) => {
-                    if (error) {
-                        res.send({ message: "Registration failed", status: false })
-
-                    } else {
-                        res.send({ message: "Registration succeful", status: true, })
-                    }
-                })
+                if (result) {
+                    res.send({ message: "Email has already been  vused", status: false })
+                }
+                else {
+                    
+                     const form = await userModel.create(req.body)
+                     let token = SigninJwt(form);
+                     res.send({ message: "your welcome ", token, status: true },)
+            
+                }
             }
-        }
-    })
+        })
+    } catch (error) {
+        res.send({ message: "Registration failed", status: false })
+    }
+
+    
 }
 const signIn = async (req, res) => {
     const Password = req.body.Password;
